@@ -1,0 +1,24 @@
+#Exemplo de arquivo que será utilizado em uma aplicação golang
+name: exemplo-arquivo-yaml
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+  # Nome do job
+  check-application:
+  #Sistema operacional que vai utilizar
+    runs-on: ubuntu-latest
+    steps:
+    	# Setup do github
+      - uses: actions/checkout@v2
+      	# Setup do golang
+      - uses: actions/setup-go@v2
+        with:
+          # Versão da golang 
+          go-version: 1.15
+      	# comando que vão ser utilizados dentro da OS
+      - run: go test
+      - run: go run math.go
+

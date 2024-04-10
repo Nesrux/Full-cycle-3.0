@@ -1,0 +1,15 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: goserver-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    name: goserver
+    kind: Deployment
+  minReplicas: 1   
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 30 #Uma boa porcentagem é 70% +
+  #Isso só funciona por causa do metrics server
+  #HPA é oque faz o autoScale dos pods do kubernetes, ele verifica o quanto de recurso esta sendo utilizado
+  # e gerencia isso para criar ou derrubar pods

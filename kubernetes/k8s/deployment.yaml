@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goserver
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "nesrux/goserver:v8.2"
+          resources:
+            requests: # -> minimo que a aplicação precisa para rodar cada pod
+              cpu: 100m
+              memory: 20Mi
+            limits: # -> maximo que ele pode usar!
+              cpu: 500m
+              memory: 30Mi
+          #readinessProbe define se o pod ja esta pronto para
+          # receber trafego
+          readinessProbe:
+            httpGet:
+              path: /helth
+              port: 8000
+            periodSeconds: 3
+            failureThreshold: 1
+            #initialDelaySeconds: 10
+
+          # Helth cheker do kubernetes
+          livenessProbe:
+            httpGet:
+              path: /helth
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 1
+            timeoutSeconds: 5
+            successThreshold: 1
+            #initialDelaySeconds: 15
+          #startuoProbe é o que "ajuda atrabalhar com liveness e readness"
+          # ambos só irão iniciar depois que o startup "permitir", usando
+          # ele perde a necessidade de utilizar o initDelaySeconds
+          startupProbe:
+            httpGet:
+              path: /helth
+              port: 8000
+            periodSeconds: 3
+            failureThreshold: 10
+
+          volumeMounts:
+            - mountPath: "/server/myfamily"
+              name: config
+
+
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+      volumes:
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+              - key: members
+                path: "family.txt"
+# Hierarquia do kubenertenes deployment -> replicaset -> pod
+#se eu mudar quaulquer coisa em deploiment, ele automaticamente gera uma nova
+# replicaset que por sua vez gera novos pods

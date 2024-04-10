@@ -1,0 +1,39 @@
+#Versão do docker compose
+version: '3'
+#A network que os containers vão se conectar
+networks:
+  #nome da network
+  laranet:
+    #Tipo da network
+    driver: bridge
+#Containeres que serão utilizados
+services:
+
+  laravel:
+    #a Tag de build é utilizada para quando nao  tempos exatamente os containers
+    # Prontos, ou para quando você quer buildar e levantar os container juntos
+    build: 
+      #o Context é a pasta onde o dockerFile esta
+      context: ./laravel
+      #e o dockerfile é o nome do arquivo dockerfile
+      dockerfile: dockerfile.prod
+    #Imagem do container
+    image: nesrux/laravel:prod
+    #nome do container 
+    container_name: "laravel"
+    #network que o container vai utilizar  
+    networks:
+      - laranet
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: dockerfile.prod
+    image: nesrux/nginx:prod
+    container_name: nginx
+    networks:
+      - laranet
+    #Portas onde o container vai se conectar
+    ports:
+      - 8080:80
+

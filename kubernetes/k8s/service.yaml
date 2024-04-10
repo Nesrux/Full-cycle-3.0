@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goserver-service
+spec:
+  selector:
+    app: goserver
+  type: LoadBalancer
+  ports:
+    - name: goserver-service
+      port: 80 #Essa porta é a porta do service e nao do container
+      targetPort: 8000 #Target port me redireciona para porta do container
+      protocol: TCP
+# o tipo loadBalancer é "suprasumo", ele basicamente é oque tem maior
+#hierarquia, pois quando ele é utilizado ele gera um ClusterIp, e um nodPort
+# ele é utilizado quando você vai botar algo em produção, ele nao funciona em
+#maquinas normais, pois precisa de drivers e outro  programas complementares
